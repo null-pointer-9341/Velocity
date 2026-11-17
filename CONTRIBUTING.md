@@ -5,7 +5,9 @@ Thanks for taking your time to attempt collaboration towards `Velocity`.
 ## How to contribute
 
 You can contribute in 2 ways:
+    
     * [Submit a pull request](https://github.com/null-pointer-9341/Velocity/pulls) and fix the issue directly.
+    
     * [File an issue](https://github.com/null-pointer-9341/Velocity/issues) for the bug.
 
 ### Submit a pull request
@@ -23,7 +25,7 @@ cd Velocity
 git checkout -b fix/<ENTER-NAME>
 ```
 
-4. Create and commit changes. (View the commit policy [below](./CONTRIBUTING.md)).
+4. Create and commit changes. (View the commit policy [below](https://github.com/null-pointer-9341/Velocity/blob/development/CONTRIBUTING.md#commit-policy)).
 
 5. Push changes to your repository (fork) and file a Pull Request to the default branch (`development`), and write a detailed description covering the changes.
 

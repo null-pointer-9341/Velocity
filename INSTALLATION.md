@@ -41,9 +41,32 @@ sudo pacman -S gcc
 
 Install a copy of the Repository by using the `gh clone` command from the GitHub CLI.
 ```bash
+gh repo clone null-pointer-9341/Velocity
+cd Velocity
+```
 
+### Build and install
+
+Build using `meson`.
+```bash
+meson compile -C build 
+```
+
+Install it (so you can use the CLI via `velocity <args>`)
+```bash
+sudo meson install -C build
 ```
 
 ## Local Files
 
-### 
+### Build and install
+
+Build from the root folder using `meson`.
+```bash
+meson compile -C build 
+```
+
+Install it (so you can use the CLI via `velocity <args>`)
+```bash
+sudo meson install -C build
+```
