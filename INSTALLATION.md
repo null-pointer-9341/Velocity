@@ -68,7 +68,7 @@ sudo meson install -C build
 
 ### Set up meson
 
-This is only required to be done once.
+This is only required to be done once per branch.
 ```bash
 meson setup build 
 ```

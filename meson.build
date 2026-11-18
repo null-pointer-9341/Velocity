@@ -11,10 +11,10 @@ project('velocity', 'cpp',
   default_options : ['warning_level=2', 'cpp_std=c++17']
 )
 
-# Runs the Git CLI to get the version and branch info
-git_version = run_command('git', 'describe', '--tags', '--always', '--dirty', check : false).stdout().strip()
-if git_version == ''
-  git_version = 'unknown'
+# Runs the Git CLI to get the commit and branch info
+git_commit = run_command('git', 'describe', '--always', '--dirty', '--exclude=*', check : false).stdout().strip()
+if git_commit == ''
+  git_commit = 'unknown'
 endif
 
 git_branch = run_command('git', 'branch', '--show-current', check : false).stdout().strip()
@@ -33,7 +33,8 @@ executable('velocity',
 
   # Sets the arguments for `cfgen.hpp` (stands for config generator by the way)
   cpp_args : [
-    '-DPROJECT_VERSION="@0@"'.format(git_version),
+    '-DPROJECT_VERSION="@0@"'.format(meson.project_version()),
+    '-DCOMMIT="@0@"'.format(git_commit),
     '-DBRANCH="@0@"'.format(git_branch)
   ],
 

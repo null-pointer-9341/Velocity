@@ -10,5 +10,8 @@ enum class ArgumentResult {
 // Handles a single argument
 ArgumentResult HandleSingleArgument(std::string CurrentArgument, std::string PreviousArgument);
 
+// Opens the console (primary purpose of existance is to look cool and get rid of needing to write `velocity` per every command)
+int OpenConsole();
+
 // The main function handles all arguments
 ArgumentResult HandleArguments(int argc, char* argv[]);

@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
 
-// Project version from git.
-std::string GetVersion();
-
 // Git branch currently in.
 std::string GetBranch();
+
+// Gets the commit the project was made from.
+std::string GetCommit();
