@@ -33,7 +33,11 @@ Most operating systems will be supported, everything outside this *can* still be
 
 ## 💡 Vision
 
-To do.
+The vision in `Velocity` is to create a source code compiler like [Rojo](https://rojo.space/). (Rojo isn't a compiler like mine, since it just syncs changes)
+
+I also wanted to create a Framework that simplifies client and server communication.
+
+This entire project was created due to the fact that collaboration in studio is kind of lacking, for external text editor / IDE support and version control (by Git).
 
 ## ✨ Features
 
@@ -52,6 +56,59 @@ To do.
 ## 🔧 How to use it
 
 You can follow the [installation guide](./INSTALLATION.md) to find out how to use it, and how to install it.
+
+## 🧩 Framework
+
+### Setup
+
+You can build the framework by adding a `-f` parameter to your `build` command.
+
+Like this:
+```bash
+velocity build -f
+```
+
+### API and Client Communication
+
+You can create a service by typing `velservice` (if you have the snippets installed).
+
+You can expose server methods and remote signals when you put them into a services `Client` table:
+
+```lua
+local Framework = require(game:GetService("ReplicatedStorage").Velocity.Framework)
+
+local ProfileService = Framework.CreateService({
+    Name = "ProfileService",
+    Client = {
+        GetProfile = function(self, player)
+            return { Name = player.Name }
+        end,
+        ProfileUpdated = Framework.CreateRemoteSignal(),
+        Report = Framework.CreateRemoteSignal(),
+    },
+})
+
+ProfileService.Client.Report:Connect(function(player, report)
+    print(player.Name, report)
+end)
+
+return ProfileService
+```
+
+Clients get a service with the same name, remote function use colon syntax and remote signal callbacks on the server receive the `Player` first.
+
+```lua
+local Framework = require(game:GetService("ReplicatedStorage").Velocity.Framework)
+local ProfileService = Framework.GetService("ProfileService")
+
+local profile = ProfileService:GetProfile()
+ProfileService.ProfileUpdated:Connect(function(updatedProfile)
+    print(updatedProfile.Name)
+end)
+ProfileService.Report:FireServer("Loaded profile")
+```
+
+Use `ProfileService.Client.ProfileUpdated:Fire(player, profile)` to notify one client, or `:FireAll(profile)` to notify everyone. Always check and validate client provided arguments in server methods, since exploiters can fire them using... exploits.
 
 ## 🤝 How to collaborate
 
