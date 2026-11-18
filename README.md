@@ -19,7 +19,11 @@ In order to download and use Velocity, you can use the [installation manual](./I
 
 ## ⚙️ Hardware requirements
 
-To do.
+I have *NOT* tested the hardware requirements for this project, but the hardware requirements should not be very needy.
+
+I'm using a 14 year old CPU, and it works fine (well it's literally just a compiler and encoder, I would be shocked if it didn't work 😭).
+
+Meaning you could probably run this compiler on a microwave.
 
 ## 💾 Operation system support
 
@@ -41,7 +45,10 @@ This entire project was created due to the fact that collaboration in studio is 
 
 ## ✨ Features
 
-To do.
+* There's a built in Framework, which allows you to use services and signals, which are extremely important for client/server communication and module/module communication.
+* The compiler allows you to use `_framework` and `_signal` which will just compile into `require(game:GetService("ReplicatedStorage").Velocity.Framework/Signal)`.
+* You can use external text editors or an IDE to write code (which also allows for better auto complete).
+* Feel free to use the `GitHub CLI` to collaborate with your team / friends.
 
 ## 🗺️ Overview
 
@@ -51,7 +58,28 @@ To do.
 
 ## 🤔 How it works
 
-To do.
+Velocity works like a small project pipeline: you organize your game code into `src/server`, `src/client`, and `src/shared`, then run the CLI to package it into a `.vrtx` file.
+
+So it's extremely simple, well I'll just show you some examples:
+
+1. `velocity init` - This will create all the source folders like `src/server`.
+2. `velocity config` - Creates the `config/project.json` so you can edit the project name (will show in studio) and the version (doesn't really do anything but looks cool)
+3. `velocity build` - Checks every script in those folders and turns it into a scene tree (folders also work).
+4. The compiler turns all these file extensions into the following types:
+   - `*.server.luau` turns into `Script`
+   - `*.client.luau` turns into `LocalScript`
+   - `*.luau` turns into `ModuleScript`
+5. The final result (after you run `velocity build`) is *ALLWAYS* gonna be under `build/<project-name>.vrtx`.
+
+When the framework is enabled with `velocity build -f`, Velocity also rewrites special aliases inside your source code. Tokens like `_framework` and `_signal` are replaced with the framework require calls.
+
+## ❓ How was it created
+
+Mostly, this was just assets taken from my other project, `Seworks`, taken and integrated into the CLI, and some additional features.
+
+This was mainly integration hell.
+
+Also I started commits quite late in development, which forced me to re-check all my changes to give the commit a proper message.
 
 ## 🔧 How to use it
 
@@ -116,4 +144,8 @@ Check out [contributing](./CONTRIBUTING.md) to learn about collaboration.
 
 ## 🔗 Summary
 
-To do.
+Velocity is a collaboration helper, you can work with your team or anyone using `Git` or any other cloud service.
+
+Also allows for better control due to services and networking, and makes it easier to write code (snippets).
+
+And well, it's just cool as heck!
