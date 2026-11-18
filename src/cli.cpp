@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-// Private API (shows all the commands and what they do)
+// Shows all the commands and what they do
 void PrintCommandUsage() {
     std::cout
         << "\033[1m" << "Basic commands:" << "\033[0m" << "\n"
@@ -11,6 +11,11 @@ void PrintCommandUsage() {
         << "    -v | -version | -ver    > Will show the project version and branch." << "\n"
         << "    -u | -usage             > Will show how to use all commands." << "\n"
         << "    -c | -console           > Opens the Velocity console." << "\n";
+}
+
+// Opens up the console
+int RunConsole() {
+
 }
 
 // Handles a single argument
@@ -49,7 +54,9 @@ ArgumentResult HandleSingleArgument(std::string CurrentArgument, std::string Pre
 
         return ArgumentResult::Ok;
     }
-    else if (CurrentArgument == "-c" || CurrentArgument == "-console")
+    else if (CurrentArgument == "-c" || CurrentArgument == "-console") {
+
+    }
 
     // Non-standalone stuff (like -name User123 (THAT IS NOT IN THE CODE AND JUST A EXAMPLE!!))
     
