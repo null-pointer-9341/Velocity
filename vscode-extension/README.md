@@ -15,7 +15,7 @@ Make sure you are inside of `/vscode-extension`.
 
 Then, to install the generated VSIX you can run:
 ```bash
-code --install-extension velocity-framework-snippets-1.0.1.vsix --force
+code --install-extension velocity-framework-snippets-1.0.4.vsix --force
 ```
 
 ## How to test

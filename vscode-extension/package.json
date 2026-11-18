@@ -2,7 +2,7 @@
   "name": "velocity-framework-snippets",
   "displayName": "Velocity Framework Snippets",
   "description": "Lua and Luau snippets for the Velocity Framework.",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "publisher": "velocity-project",
   "repository": {
     "type": "git",
@@ -16,6 +16,12 @@
     "Snippets"
   ],
   "contributes": {
+    "configurationDefaults": {
+      "files.associations": {
+        "*.client.luau": "lua",
+        "*.server.luau": "lua"
+      }
+    },
     "snippets": [
       {
         "language": "lua",

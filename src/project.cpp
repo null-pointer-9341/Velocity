@@ -59,11 +59,11 @@ struct ScriptKind {
 
 ScriptKind ScriptKinds[] = {
     {
-        ".luau.server", 
+        ".server.luau",
         "Script"
     },
     {
-        ".luau.client", 
+        ".client.luau",
         "LocalScript"
     },
     {
@@ -408,6 +408,7 @@ bool RunBuild(bool includeFramework) {
                     continue;
                 }
 
+                // `Foo.luau.server` becomes a Script named `Foo`, inside the folder's service
                 const std::string scriptName = fileName.substr(0, fileName.size() - kind->Extension.size());
                 const fs::path relativeParent = file.parent_path().lexically_relative(folderPath);
                 const std::string parent = relativeParent.empty() || relativeParent == "."

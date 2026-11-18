@@ -106,7 +106,7 @@ ArgumentResult HandleSingleArgument(std::string CurrentArgument) {
             << "    From branch: " << GetBranch() << "\n"
             << "\n"
             << "\033[1m" << "Velocity" << "\033[0m" << "\n"
-            << "    Velocity is a compiler, turns all of your `.luau.server / .luau.client / .luau` into a .vrtx file." << "\n"
+            << "    Velocity is a compiler, turns all of your `.server.luau / .client.luau / .luau` into a .vrtx file." << "\n"
             << "    .vrtx is the file extension used by Vortex. Similar to Roblox's .rbxl." << "\n"
             << "\n";
         PrintCommandUsage();
