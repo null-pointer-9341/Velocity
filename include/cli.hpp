@@ -6,8 +6,20 @@ enum class ArgumentResult {
     InvalidArgument,    // The argument was invalid
 };
 
+// A flag requires a name and a function
+struct ValueFlag {
+    std::string Name;
+    void (*Handler)(std::string Value);
+};
+
+// Finds a flag from a table using the argument.
+ValueFlag* FindValueFlag(std::string Argument);
+
+// Checks if the flag needs a value after it
+bool FlagNeedsValue(std::string Argument);
+
 // Handles a single argument
-ArgumentResult HandleSingleArgument(std::string CurrentArgument, std::string PreviousArgument);
+ArgumentResult HandleSingleArgument(std::string CurrentArgument);
 
 // This is just to show all commands and their usage.
 void PrintCommandUsage();
