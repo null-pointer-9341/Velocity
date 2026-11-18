@@ -22,6 +22,10 @@ if git_branch == ''
   git_branch = 'detached'
 endif
 
+# The encoder needs zstd to compress and json-glib to read the scene files.
+zstd_dep = dependency('libzstd')
+json_dep = dependency('json-glib-1.0')
+
 # All headers must be placed in `include_directories`.
 inc = include_directories('include')
 
@@ -29,11 +33,15 @@ executable('velocity',
   'src/main.cpp',
   'src/cli.cpp',
   'src/cfgen.cpp',
+  'src/compiler.cpp',
+  'src/framework.cpp',
+  'src/project.cpp',
+  'src/vrtx_encoder.cpp',
   include_directories : inc,
+  dependencies : [zstd_dep, json_dep],
 
   # Sets the arguments for `cfgen.hpp` (stands for config generator by the way)
   cpp_args : [
-    '-DPROJECT_VERSION="@0@"'.format(meson.project_version()),
     '-DCOMMIT="@0@"'.format(git_commit),
     '-DBRANCH="@0@"'.format(git_branch)
   ],
