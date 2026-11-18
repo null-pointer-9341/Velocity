@@ -84,3 +84,45 @@ Install it (so you can use the CLI via `velocity <args>`)
 ```bash
 sudo meson install -C build
 ```
+
+# Usage Guide
+
+## CLI
+
+### Help
+
+In order to get a list of commands from the Command-Line Interface you can use:
+```bash
+velocity -help
+```
+
+### Initiation
+
+To create config files, you will have to initiate the root folder of your source code.
+```bash
+velocity init
+```
+
+This will create three folders in the `/src` subdirectory:
+
+* server
+* client
+* shared
+
+The `server` folder represents `ServerScriptService`, the `client` folder represents `StarterPlayerScripts` and `shared` represents `ReplicatedStorage`.
+
+### Other functions
+
+From there, you will be able to use:
+```bash
+velocity build
+```
+
+Which will output the finished `.vrtx` file into the `/build` directory.
+
+You can run:
+```bash
+velocity config
+```
+
+In order to generate the `/config` folder, which will contain all configurable data, like the project name, the project version etc.
