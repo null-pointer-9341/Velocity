@@ -4,6 +4,8 @@
 enum class ArgumentResult {
     Ok,                 // Passed
     InvalidArgument,    // The argument was invalid
+    CompileFailed,      // The scene couldn't be compiled
+    CommandFailed,      // A command (init, config, build or literally anything else) failed
 };
 
 // A flag requires a name and a function
@@ -23,9 +25,6 @@ ArgumentResult HandleSingleArgument(std::string CurrentArgument);
 
 // This is just to show all commands and their usage.
 void PrintCommandUsage();
-
-// Opens the console (primary purpose of existance is to look cool and get rid of needing to write `velocity` per every command)
-int RunConsole();
 
 // The main function handles all arguments
 ArgumentResult HandleArguments(int argc, char* argv[]);

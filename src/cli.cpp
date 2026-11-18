@@ -1,8 +1,20 @@
 #include "cli.hpp"
 #include "cfgen.hpp"
+#include "compiler.hpp"
+#include "project.hpp"
 
 #include <iostream>
 #include <string>
+
+namespace {
+
+bool IncludeFramework = false;
+
+bool IsFrameworkFlag(const std::string& argument) {
+    return argument == "-framework" || argument == "-f";
+}
+
+}  // namespace
 
 // Shows all the commands and what they do
 void PrintCommandUsage() {
@@ -10,7 +22,12 @@ void PrintCommandUsage() {
         << "\033[1m" << "Basic commands:" << "\033[0m" << "\n"
         << "    -h | -help              > Will show this output." << "\n"
         << "    -v | -version | -ver    > Will show the project version and branch." << "\n"
-        << "    -u | -usage             > Will show how to use all commands." << "\n";
+        << "    -u | -usage             > Will show how to use all commands." << "\n"
+        << "    -c | -compile FILE      > Compiles a scene .json into a .vrtx file." << "\n"
+        << "    -o | -output FILE       > Sets where the .vrtx gets written (default is the scene's name)." << "\n"
+        << "    init                    > Creates the source folders (server, client, shared)." << "\n"
+        << "    config                  > Creates the config folder (project name, version etc.)." << "\n"
+        << "    build [-framework|-f]   > Compiles scripts into a .vrtx file; optionally embeds Velocity Framework." << "\n";
 }
 
 // ARGUMENT STUFF
@@ -22,11 +39,37 @@ void HandleTest(std::string Value) {
     std::cout << Value << "\n";
 }
 
+// Sets the scene which gets compiled
+void HandleCompile(std::string Value) {
+    SetCompileInput(Value);
+}
+
+// Sets where the compiled .vrtx gets written
+void HandleOutput(std::string Value) {
+    SetCompileOutput(Value);
+}
+
 // All the flags (should be configurable)
 ValueFlag ValueFlags[] = {
     {
         "-test", 
         HandleTest
+    },
+    {
+        "-c", 
+        HandleCompile
+    },
+    {
+        "-compile", 
+        HandleCompile
+    },
+    {
+        "-o", 
+        HandleOutput
+    },
+    {
+        "-output", 
+        HandleOutput
     },
 };
 
@@ -88,6 +131,33 @@ ArgumentResult HandleSingleArgument(std::string CurrentArgument) {
         return ArgumentResult::Ok;
     }
 
+    // Creates the source folders
+    else if (CurrentArgument == "init") {
+        if (!RunInit()) {
+            return ArgumentResult::CommandFailed;
+        }
+
+        return ArgumentResult::Ok;
+    }
+
+    // Creates the config folder
+    else if (CurrentArgument == "config") {
+        if (!RunConfig()) {
+            return ArgumentResult::CommandFailed;
+        }
+
+        return ArgumentResult::Ok;
+    }
+
+    // Compiles the scripts into a .vrtx file
+    else if (CurrentArgument == "build") {
+        if (!RunBuild(IncludeFramework)) {
+            return ArgumentResult::CommandFailed;
+        }
+
+        return ArgumentResult::Ok;
+    }
+
     // No such instruction.
     return ArgumentResult::InvalidArgument;
 }
@@ -96,11 +166,21 @@ ArgumentResult HandleSingleArgument(std::string CurrentArgument) {
 ArgumentResult HandleArguments(int argc, char* argv[]) {
     std::string currentInstruction = "";
     std::string previousInstruction = "";
+    IncludeFramework = false;
+
+    for (int currentIndex = 1; currentIndex < argc; currentIndex++) {
+        if (IsFrameworkFlag(argv[currentIndex])) {
+            IncludeFramework = true;
+        }
+    }
 
     for (int currentIndex = 1; currentIndex < argc; currentIndex++) {
         // Assign current instruction
         currentInstruction = argv[currentIndex];
 
+        if (IsFrameworkFlag(currentInstruction)) {
+            continue;
+        }
 
         ValueFlag* valueFlag = FindValueFlag(currentInstruction);
         if (valueFlag != nullptr) {
@@ -108,11 +188,8 @@ ArgumentResult HandleArguments(int argc, char* argv[]) {
                 std::cout 
                 << "\033[1;31m" 
                 << "ERROR: "
-                << "\033[0m";
-
-                std::cout
-                    << "ArgumentResult::InvalidArgument, " << currentInstruction << " requires a value." << "\n"
-                    << "\033[1;32m" << "INFO: " << "\033[0m" << "Use `velocity -help` to get a list of commands." << "\n";
+                << "\033[0m"
+                << currentInstruction << " needs a value." << "\n";
 
                 return ArgumentResult::InvalidArgument;
             }
@@ -133,9 +210,7 @@ ArgumentResult HandleArguments(int argc, char* argv[]) {
 
             // For all invalid arguments
             if (result == ArgumentResult::InvalidArgument) {
-                std::cout
-                    << "ArgumentResult::InvalidArgument, please provide proper arguments." << "\n"
-                    << "\033[1;32m" << "INFO: " << "\033[0m" << "Use `velocity -help` to get a list of commands." << "\n";
+                std::cout << "ArgumentResult::InvalidArgument, please provide proper arguments." << "\n";
             }
 
             return result;
@@ -143,6 +218,11 @@ ArgumentResult HandleArguments(int argc, char* argv[]) {
 
         // Assign next instruction
         previousInstruction = argv[currentIndex];
+    }
+
+    // Every argument has been read, so now compile if a scene was given
+    if (!RunCompile()) {
+        return ArgumentResult::CompileFailed;
     }
 
     return ArgumentResult::Ok;
