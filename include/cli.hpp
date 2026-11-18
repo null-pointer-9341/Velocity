@@ -3,8 +3,7 @@
 
 enum class ArgumentResult {
     Ok,                 // Passed
-    InvalidArgument,    // The argument was invalid (e.g. 'Branch Name')
-    InvalidInstruction, // The instruction was invalid (e.g. '--naem')
+    InvalidArgument,    // The argument was invalid
 };
 
 // Handles a single argument
