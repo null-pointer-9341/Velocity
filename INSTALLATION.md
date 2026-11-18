@@ -45,6 +45,13 @@ gh repo clone null-pointer-9341/Velocity
 cd Velocity
 ```
 
+### Set up meson
+
+This is only required to be done once.
+```bash
+meson setup build 
+```
+
 ### Build and install
 
 Build using `meson`.
@@ -58,6 +65,13 @@ sudo meson install -C build
 ```
 
 ## Local Files
+
+### Set up meson
+
+This is only required to be done once.
+```bash
+meson setup build 
+```
 
 ### Build and install
 
