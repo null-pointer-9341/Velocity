@@ -46,5 +46,6 @@ executable('velocity',
     '-DBRANCH="@0@"'.format(git_branch)
   ],
 
+  link_args : ['-static-libgcc', '-static-libstdc++'],
   install : true
 )

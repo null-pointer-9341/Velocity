@@ -21,6 +21,11 @@ pip3 install --user meson
 sudo pacman -S meson ninja   
 ```
 
+### Fedora:
+```bash
+sudo dnf install meson ninja-build
+```
+
 ### GCC
 
 You'll also require a C++ Compiler like `g++`.
@@ -30,9 +35,33 @@ You'll also require a C++ Compiler like `g++`.
 sudo apt install g++
 ```
 
-## Arch
+### Arch
 ```bash
 sudo pacman -S gcc
+```
+
+### Fedora:
+```bash
+sudo dnf install gcc-c++
+```
+
+### libzstd and json-glib
+
+You will require those 2 libraries, they should usually be installed on your OS, but if they aren't you can use this:
+
+### Ubuntu, Debian, Mint:
+```bash
+sudo apt install libzstd1 libjson-glib-1.0-0
+```
+
+### Arch
+```bash
+sudo pacman -S zstd json-glib
+```
+
+### Fedora
+```bash
+sudo dnf install libzstd json-glib
 ```
 
 ## GitHub
@@ -44,6 +73,15 @@ Install a copy of the Repository by using the `gh clone` command from the GitHub
 gh repo clone null-pointer-9341/Velocity
 cd Velocity
 ```
+
+### Important notice
+
+Whenever you are creating a precompiled binary (for a release) then use this setup!
+```bash
+meson setup build --buildtype=release
+```
+
+After that you can simply compile like normal.
 
 ### Set up meson
 
@@ -66,6 +104,15 @@ sudo meson install -C build
 
 ## Local Files
 
+### Important notice
+
+Whenever you are creating a precompiled binary (for a release) then use this setup!
+```bash
+meson setup build --buildtype=release
+```
+
+After that you can simply compile like normal.
+
 ### Set up meson
 
 This is only required to be done once per branch.
@@ -83,6 +130,24 @@ meson compile -C build
 Install it (so you can use the CLI via `velocity <args>`)
 ```bash
 sudo meson install -C build
+```
+
+## Precompiled Binary
+
+### Get latest
+
+You can get one of the [precompiled binaries](https://github.com/null-pointer-9341/Velocity/releases/latest).
+
+Since I use Arch Linux, most of these precompiled binaries will work on Arch.
+
+Feel free to build the binary in your operating system and contribute with the precompiled binary.
+
+### Install latest
+
+After you extract the `install.sh` and `velocity` compiled files, you can run the `installer.sh` in order to put `velocity` on your path.
+
+```bash
+./install.sh
 ```
 
 # Usage Guide
