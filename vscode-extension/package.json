@@ -1,0 +1,30 @@
+{
+  "name": "velocity-framework-snippets",
+  "displayName": "Velocity Framework Snippets",
+  "description": "Lua and Luau snippets for the Velocity Framework.",
+  "version": "1.0.1",
+  "publisher": "velocity-project",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/null-pointer-9341/Velocity.git",
+    "directory": "vscode-extension"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Snippets"
+  ],
+  "contributes": {
+    "snippets": [
+      {
+        "language": "lua",
+        "path": "./snippets/velocity-framework.code-snippets"
+      },
+      {
+        "language": "luau",
+        "path": "./snippets/velocity-framework.code-snippets"
+      }
+    ]
+  }
+}

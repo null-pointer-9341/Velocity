@@ -1,0 +1,147 @@
+{
+  "Velocity service": {
+    "prefix": "velservice",
+    "body": [
+      "local Framework = _framework",
+      "",
+      "local ${1:MyService} = Framework.CreateService({",
+      "    Name = \"${1:MyService}\",",
+      "})",
+      "",
+      "function ${1:MyService}:Init()",
+      "    $0",
+      "end",
+      "",
+      "function ${1:MyService}:Start()",
+      "end",
+      "",
+      "return ${1:MyService}"
+    ],
+    "description": "Create a Velocity service module."
+  },
+  "Velocity client-server service": {
+    "prefix": "velrpcservice",
+    "body": [
+      "local Framework = _framework",
+      "",
+      "local ${1:MyService} = Framework.CreateService({",
+      "    Name = \"${1:MyService}\",",
+      "    Client = {",
+      "        ${2:GetData} = function(self, player)",
+      "            $0",
+      "        end,",
+      "        ${3:Changed} = Framework.CreateRemoteSignal(),",
+      "    },",
+      "})",
+      "",
+      "return ${1:MyService}"
+    ],
+    "description": "Create a service with a client-callable method and remote signal."
+  },
+  "Velocity service bootstrap": {
+    "prefix": "velstart",
+    "body": [
+      "local Framework = _framework",
+      "local servicesFolder = script.Parent:WaitForChild(\"Services\")",
+      "",
+      "for _, serviceModule in ipairs(servicesFolder:GetChildren()) do",
+      "    if serviceModule:IsA(\"ModuleScript\") then",
+      "        require(serviceModule)",
+      "    end",
+      "end",
+      "",
+      "Framework.Start()"
+    ],
+    "description": "Require service modules and run their Init and Start lifecycle methods."
+  },
+  "Get Velocity service": {
+    "prefix": "velget",
+    "body": [
+      "local ${1:Service} = _framework.GetService(\"${2:ServiceName}\")"
+    ],
+    "description": "Get a registered Velocity service."
+  },
+  "Get Velocity client service": {
+    "prefix": "velclientservice",
+    "body": [
+      "local ${1:Service} = _framework.GetService(\"${2:ServiceName}\")"
+    ],
+    "description": "Get a server service proxy from a client script."
+  },
+  "Call Velocity service method": {
+    "prefix": "velcall",
+    "body": [
+      "${1:Service}:${2:GetProfile}(${3})"
+    ],
+    "description": "Call a server method exposed in a service Client table."
+  },
+  "Connect Velocity remote signal": {
+    "prefix": "velremoteconnect",
+    "body": [
+      "${1:Service}.${2:Changed}:Connect(function(${3:value})",
+      "    $0",
+      "end)"
+    ],
+    "description": "Listen for a server remote signal from a client script."
+  },
+  "Connect Velocity client signal on server": {
+    "prefix": "velremoteonserver",
+    "body": [
+      "${1:Service}.Client.${2:Report}:Connect(function(player, ${3:message})",
+      "    $0",
+      "end)"
+    ],
+    "description": "Listen for a client remote signal on the server; the sender is provided first."
+  },
+  "Fire Velocity remote signal to server": {
+    "prefix": "velremotetoserver",
+    "body": [
+      "${1:Service}.${2:Report}:FireServer(${3:message})"
+    ],
+    "description": "Send a remote signal from a client to the server."
+  },
+  "Fire Velocity remote signal to client": {
+    "prefix": "velremotetoclient",
+    "body": [
+      "${1:Service}.Client.${2:Changed}:Fire(${3:player}, ${4:value})"
+    ],
+    "description": "Send a remote signal from the server to one client."
+  },
+  "Broadcast Velocity remote signal": {
+    "prefix": "velremotebroadcast",
+    "body": [
+      "${1:Service}.Client.${2:Changed}:FireAll(${3:value})"
+    ],
+    "description": "Broadcast a remote signal from the server to all clients."
+  },
+  "Create Velocity signal": {
+    "prefix": "velsignal",
+    "body": [
+      "local ${1:Changed} = _signal.new()"
+    ],
+    "description": "Create a local Velocity signal."
+  },
+  "Connect Velocity signal": {
+    "prefix": "velconnect",
+    "body": [
+      "${1:signal}:Connect(function(${2:value})",
+      "    $0",
+      "end)"
+    ],
+    "description": "Connect a callback to a Velocity signal."
+  },
+  "Fire Velocity signal": {
+    "prefix": "velfire",
+    "body": [
+      "${1:signal}:Fire(${2:value})"
+    ],
+    "description": "Fire a Velocity signal."
+  },
+  "Wait for Velocity signal": {
+    "prefix": "velwait",
+    "body": [
+      "local ${1:value} = ${2:signal}:Wait()"
+    ],
+    "description": "Wait for a Velocity signal and capture its arguments."
+  }
+}
