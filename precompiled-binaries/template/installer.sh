@@ -1,12 +1,13 @@
 #!/bin/bash
 # Alright so this script just copies velocity into a folder thats on your PATH
+# Whenever you finish a precompiled binary, place this installer into the build.
 
 set -e
 
 # Just for style
-RED_BOLD='\033[1;31m'
-BLUE_BOLD='\033[1;36m'
-RESET='\033[0m'
+RED_BOLD=$'\033[1;31m'
+BLUE_BOLD=$'\033[1;36m'
+RESET=$'\033[0m'
 
 # The velocity file needs to be next to this script
 if [ ! -f "./velocity" ]; then

@@ -34,6 +34,7 @@ Most operating systems will be supported, everything outside this *can* still be
 - [x] Linux Ubuntu support
 - [x] Linux Arch support
 - [x] Linux Mint support
+- [x] Linux Fedora support
 
 ## 💡 Vision
 
