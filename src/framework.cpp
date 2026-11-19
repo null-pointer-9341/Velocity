@@ -104,19 +104,34 @@ local state = "registering"
 local RemoteSignal = {}
 RemoteSignal.__index = RemoteSignal
 
+-- if a remote signal has _local set, its a client only one, so it just uses a normal signal and no RemoteEvent
+-- (this is what fixes client only modules not finding their events)
+
 function RemoteSignal:Fire(player, ...)
+	if self._local then
+		self._local:Fire(...)
+		return
+	end
 	assert(isServer, "RemoteSignal:Fire can only be called by the server")
 	assert(self._bound, "RemoteSignal is not bound to a service")
 	self._remote:FireClient(player, ...)
 end
 
 function RemoteSignal:FireAll(...)
+	if self._local then
+		self._local:Fire(...)
+		return
+	end
 	assert(isServer, "RemoteSignal:FireAll can only be called by the server")
 	assert(self._bound, "RemoteSignal is not bound to a service")
 	self._remote:FireAllClients(...)
 end
 
 function RemoteSignal:FireServer(...)
+	if self._local then
+		self._local:Fire(...)
+		return
+	end
 	assert(not isServer, "RemoteSignal:FireServer can only be called by a client")
 	assert(self._bound, "RemoteSignal is not bound to a service")
 	self._remote:FireServer(...)
@@ -124,6 +139,9 @@ end
 
 function RemoteSignal:Connect(callback)
 	assert(type(callback) == "function", "RemoteSignal:Connect expects a function")
+	if self._local then
+		return self._local:Connect(callback)
+	end
 	assert(self._remote ~= nil, "RemoteSignal is not bound to a service")
 	if isServer then
 		return self._remote.OnServerEvent:Connect(callback)
@@ -132,6 +150,9 @@ function RemoteSignal:Connect(callback)
 end
 
 function RemoteSignal:Wait()
+	if self._local then
+		return self._local:Wait()
+	end
 	assert(not isServer, "RemoteSignal:Wait can only be called by a client")
 	assert(self._remote ~= nil, "RemoteSignal is not bound to a service")
 	return self._remote.OnClientEvent:Wait()
@@ -191,6 +212,12 @@ end
 
 function Framework.GetService(name)
 	if not isServer then
+		-- services made on the client are local, so just hand them back right away
+		-- (no waiting on the Remotes folder, the server never makes anything for these)
+		if services[name] ~= nil then
+			return services[name]
+		end
+
 		if clientServices[name] ~= nil then
 			return clientServices[name]
 		end
@@ -249,7 +276,13 @@ end
 
 function Framework.CreateRemoteSignal()
 	assert(state == "registering", "RemoteSignals must be created before Framework.Start()")
-	assert(isServer, "RemoteSignals can only be created on the server")
+	if not isServer then
+		-- on the client theres no RemoteEvent to make, so this is just a local signal pretending to be one
+		return setmetatable({
+			_local = Signal.new(),
+			_bound = true,
+		}, RemoteSignal)
+	end
 	return setmetatable({
 		_remote = Instance.new("RemoteEvent"),
 		_bound = false,
