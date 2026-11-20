@@ -30,7 +30,7 @@ void PrintCommandUsage() {
         << "    build [-framework|-f]   > Compiles scripts into a .vrtx file; optionally embeds Velocity Framework." << "\n";
 }
 
-// ARGUMENT STUFF
+// Arguments and stuffs
 // Handles all commands which require parameters like if you had this
 // `-name NullPointer`
 
@@ -90,7 +90,7 @@ bool FlagNeedsValue(std::string Argument) {
     return FindValueFlag(Argument) != nullptr;
 }
 
-// STANDALONE STUFF
+// Standalone stuff
 // Handles all standalone commands
 ArgumentResult HandleSingleArgument(std::string CurrentArgument) {
     // If the currentArgument doesn't exist then return.

@@ -104,9 +104,6 @@ local state = "registering"
 local RemoteSignal = {}
 RemoteSignal.__index = RemoteSignal
 
--- if a remote signal has _local set, its a client only one, so it just uses a normal signal and no RemoteEvent
--- (this is what fixes client only modules not finding their events)
-
 function RemoteSignal:Fire(player, ...)
 	if self._local then
 		self._local:Fire(...)
@@ -212,8 +209,7 @@ end
 
 function Framework.GetService(name)
 	if not isServer then
-		-- services made on the client are local, so just hand them back right away
-		-- (no waiting on the Remotes folder, the server never makes anything for these)
+		-- client services are not created on the client, so we have to create a proxy for them
 		if services[name] ~= nil then
 			return services[name]
 		end
