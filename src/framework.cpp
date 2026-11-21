@@ -98,6 +98,8 @@ local isServer = RunService:IsServer()
 local Framework = {}
 local services = {}
 local serviceOrder = {}
+local controllers = {}
+local controllerOrder = {}
 local clientServices = {}
 local state = "registering"
 
@@ -266,6 +268,25 @@ function Framework.GetService(name)
 	return service
 end
 
+function Framework.CreateController(definition)
+	assert(not isServer, "Controllers can only be created on the client")
+	assert(state == "registering", "Controllers can only be created before Framework.Start()")
+	assert(type(definition) == "table", "CreateController expects a table")
+	assert(type(definition.Name) == "string" and definition.Name ~= "", "Controller requires a Name")
+	assert(controllers[definition.Name] == nil, "Controller already exists: " .. definition.Name)
+
+	controllers[definition.Name] = definition
+	table.insert(controllerOrder, definition)
+	return definition
+end
+
+function Framework.GetController(name)
+	assert(not isServer, "Controllers can only be accessed on the client")
+	local controller = controllers[name]
+	assert(controller ~= nil, "Unknown controller: " .. tostring(name))
+	return controller
+end
+
 function Framework.CreateSignal()
 	return Signal.new()
 end
@@ -298,9 +319,19 @@ function Framework.Start()
 				service:Init()
 			end
 		end
+		for _, controller in ipairs(controllerOrder) do
+			if controller.Init then
+				controller:Init()
+			end
+		end
 		for _, service in ipairs(serviceOrder) do
 			if service.Start then
 				service:Start()
+			end
+		end
+		for _, controller in ipairs(controllerOrder) do
+			if controller.Start then
+				controller:Start()
 			end
 		end
 	end)

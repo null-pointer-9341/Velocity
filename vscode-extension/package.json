@@ -2,7 +2,7 @@
   "name": "velocity-framework-snippets",
   "displayName": "Velocity Framework Snippets",
   "description": "Lua and Luau snippets for the Velocity Framework.",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "publisher": "velocity-project",
   "repository": {
     "type": "git",

@@ -139,6 +139,41 @@ ProfileService.Report:FireServer("Loaded profile")
 
 Use `ProfileService.Client.ProfileUpdated:Fire(player, profile)` to notify one client, or `:FireAll(profile)` to notify everyone. Always check and validate client provided arguments in server methods, since exploiters can fire them using... exploits.
 
+### Client Controllers
+
+Alright so, if you don't already know the deal (from Knit), then Controllers are basically just client only modules for client state and behaviour.
+
+You must require every controller module before calling `Framework.Start()` or else it'll not work.
+
+All controller `Init` methods run before any controller `Start` method (you can place your `velget` inside `Start`) this is the same as Services.
+
+Example:
+```lua
+local Framework = _framework
+
+local MainController = Framework.CreateController({
+    Name = "MainController",
+})
+
+function MainController:Init()
+    self.ProfileService = Framework.GetService("ProfileService")
+end
+
+function MainController:Start()
+    self.ProfileService.ProfileUpdated:Connect(function(profile)
+        print(profile.Name)
+    end)
+end
+
+return MainController
+```
+
+You can use something similar to `Framework.GetService()` and that is `Framework.GetController()` to get a controller.
+
+## 📝 Framework Documentation
+
+Currently there isn't a documentation, (yet).
+
 ## 🤝 How to collaborate
 
 Check out [contributing](./CONTRIBUTING.md) to learn about collaboration.
