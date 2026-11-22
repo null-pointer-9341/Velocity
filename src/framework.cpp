@@ -6,6 +6,8 @@ namespace seworks::vrtx {
 namespace {
 
 constexpr char kSignalSource[] = R"luau(
+-- COMPILED USING VELOCITY
+-- ALL RIGHTS RESERVED
 local Signal = {}
 Signal.__index = Signal
 
@@ -91,9 +93,12 @@ return Signal
 )luau";
 
 constexpr char kFrameworkSource[] = R"luau(
+-- COMPILED USING VELOCITY
+-- ALL RIGHTS RESERVED
 local Signal = require(script.Parent.Signal)
 local RunService = game:GetService("RunService")
-local isServer = RunService:IsServer()
+local Players = game:GetService("Players")
+local isServer = RunService:IsServer() or Players.LocalPlayer == nil
 
 local Framework = {}
 local services = {}
@@ -105,6 +110,79 @@ local state = "registering"
 
 local RemoteSignal = {}
 RemoteSignal.__index = RemoteSignal
+
+local function connectServerEvent(remote, callback)
+	local okServerEvent, onServerEvent = pcall(function()
+		return remote.OnServerEvent
+	end)
+	if okServerEvent and onServerEvent ~= nil then
+		return onServerEvent:Connect(callback)
+	end
+
+	local ok, onRemoteEvent = pcall(function()
+		return remote.OnRemoteEvent
+	end)
+	assert(ok and onRemoteEvent ~= nil, "RemoteEvent has no server event connection API")
+	if type(onRemoteEvent) == "function" then
+		return onRemoteEvent(remote, callback)
+	end
+	return onRemoteEvent:Connect(callback)
+end
+
+local function connectClientEvent(remote, callback)
+	local okClientEvent, onClientEvent = pcall(function()
+		return remote.OnClientEvent
+	end)
+	if okClientEvent and onClientEvent ~= nil then
+		return onClientEvent:Connect(callback)
+	end
+
+	local ok, onRemoteEvent = pcall(function()
+		return remote.OnRemoteEvent
+	end)
+	assert(ok and onRemoteEvent ~= nil, "RemoteEvent has no client event connection API")
+	if type(onRemoteEvent) == "function" then
+		return onRemoteEvent(remote, callback)
+	end
+	return onRemoteEvent:Connect(callback)
+end
+
+local function waitForClientEvent(remote)
+	local okClientEvent, onClientEvent = pcall(function()
+		return remote.OnClientEvent
+	end)
+	if okClientEvent and onClientEvent ~= nil then
+		return onClientEvent:Wait()
+	end
+
+	local ok, onRemoteEvent = pcall(function()
+		return remote.OnRemoteEvent
+	end)
+	assert(ok and onRemoteEvent ~= nil, "RemoteEvent has no client event wait API")
+	if type(onRemoteEvent) == "function" then
+		error("RemoteEvent OnRemoteEvent callback API cannot be used as Wait")
+	end
+	return onRemoteEvent:Wait()
+end
+
+local function bindServerFunction(remote, callback)
+	local ok, onRemoteInvoke = pcall(function()
+		return remote.OnRemoteInvoke
+	end)
+	if ok and onRemoteInvoke ~= nil then
+		if type(onRemoteInvoke) == "function" then
+			return onRemoteInvoke(remote, callback)
+		end
+		if onRemoteInvoke.Connect then
+			return onRemoteInvoke:Connect(callback)
+		end
+	end
+
+	local okServerInvoke = pcall(function()
+		remote.OnServerInvoke = callback
+	end)
+	assert(okServerInvoke, "RemoteFunction has no server invoke API")
+end
 
 function RemoteSignal:Fire(player, ...)
 	if self._local then
@@ -143,9 +221,9 @@ function RemoteSignal:Connect(callback)
 	end
 	assert(self._remote ~= nil, "RemoteSignal is not bound to a service")
 	if isServer then
-		return self._remote.OnServerEvent:Connect(callback)
+		return connectServerEvent(self._remote, callback)
 	end
-	return self._remote.OnClientEvent:Connect(callback)
+	return connectClientEvent(self._remote, callback)
 end
 
 function RemoteSignal:Wait()
@@ -154,7 +232,7 @@ function RemoteSignal:Wait()
 	end
 	assert(not isServer, "RemoteSignal:Wait can only be called by a client")
 	assert(self._remote ~= nil, "RemoteSignal is not bound to a service")
-	return self._remote.OnClientEvent:Wait()
+	return waitForClientEvent(self._remote)
 end
 
 local function createRemoteFolder()
@@ -167,27 +245,53 @@ local function createRemoteFolder()
 	return folder
 end
 
+local function findUniqueChild(parent, name, className)
+	local match
+	for _, child in ipairs(parent:GetChildren()) do
+		if child.Name == name then
+			assert(child:IsA(className), "Expected " .. className .. " for " .. name)
+			if match == nil then
+				match = child
+			else
+				child:Destroy()
+			end
+		end
+	end
+	return match
+end
+
 local function bindClientEndpoints()
 	local remoteRoot = createRemoteFolder()
 	for _, service in ipairs(serviceOrder) do
-		local serviceFolder = Instance.new("Folder")
-		serviceFolder.Name = service.Name
-		serviceFolder.Parent = remoteRoot
+		local serviceFolder = findUniqueChild(remoteRoot, service.Name, "Folder")
+		if serviceFolder == nil then
+			serviceFolder = Instance.new("Folder")
+			serviceFolder.Name = service.Name
+			serviceFolder.Parent = remoteRoot
+		end
 
 		for endpointName, endpoint in pairs(service.Client) do
 			assert(type(endpointName) == "string" and endpointName ~= "", "Client endpoint names must be non-empty strings")
 			if type(endpoint) == "function" then
-				local remote = Instance.new("RemoteFunction")
-				remote.Name = endpointName
-				remote.OnServerInvoke = function(player, ...)
-					return endpoint(service.Client, player, ...)
+				local remote = findUniqueChild(serviceFolder, endpointName, "RemoteFunction")
+				if remote == nil then
+					remote = Instance.new("RemoteFunction")
+					remote.Name = endpointName
+					remote.Parent = serviceFolder
 				end
-				remote.Parent = serviceFolder
+				bindServerFunction(remote, function(player, ...)
+					return endpoint(service.Client, player, ...)
+				end)
 			elseif getmetatable(endpoint) == RemoteSignal then
 				assert(not endpoint._bound, "A RemoteSignal cannot be registered more than once")
-				local remote = endpoint._remote
-				remote.Name = endpointName
-				remote.Parent = serviceFolder
+				local remote = findUniqueChild(serviceFolder, endpointName, "RemoteEvent")
+				if remote == nil then
+					remote = endpoint._remote
+					remote.Name = endpointName
+					remote.Parent = serviceFolder
+				else
+					endpoint._remote = remote
+				end
 				endpoint._bound = true
 			else
 				error("Client endpoint '" .. endpointName .. "' must be a function or RemoteSignal")
@@ -211,7 +315,6 @@ end
 
 function Framework.GetService(name)
 	if not isServer then
-		-- client services are not created on the client, so we have to create a proxy for them
 		if services[name] ~= nil then
 			return services[name]
 		end
@@ -239,11 +342,11 @@ function Framework.GetService(name)
 						__index = function(_, method)
 							if method == "Connect" then
 								return function(_, callback)
-									return remote.OnClientEvent:Connect(callback)
+									return connectClientEvent(remote, callback)
 								end
 							elseif method == "Wait" then
 								return function()
-									return remote.OnClientEvent:Wait()
+									return waitForClientEvent(remote)
 								end
 							elseif method == "FireServer" then
 								return function(_, ...)
@@ -294,7 +397,6 @@ end
 function Framework.CreateRemoteSignal()
 	assert(state == "registering", "RemoteSignals must be created before Framework.Start()")
 	if not isServer then
-		-- on the client theres no RemoteEvent to make, so this is just a local signal pretending to be one
 		return setmetatable({
 			_local = Signal.new(),
 			_bound = true,

@@ -137,7 +137,8 @@ sudo meson install -C build
 From the repository root, choose a new version folder and copy the template into it.
 ```bash
 VERSION=v3 # PICK THE NAME PLEASE!
-cp -r precompiled-binaries/template "precompiled-binaries/$VERSION" # Copy the template into precompiled-binaries
+mkdir -p "precompiled-binaries/$VERSION"
+cp -r precompiled-binaries/template/. "precompiled-binaries/$VERSION/" # Copy the template contents into the version folder
 install -m 755 build/velocity "precompiled-binaries/$VERSION/velocity" # Copy the build result into the version folder and give 755 permissions.
 cd "precompiled-binaries/$VERSION" # Move into it.
 tar -czvf velocity-linux-x86_64.tar.gz velocity installer.sh # Zip it.
