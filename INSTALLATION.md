@@ -64,6 +64,16 @@ sudo pacman -S zstd json-glib
 sudo dnf install libzstd json-glib
 ```
 
+## AUR
+
+Currently, the Arch User Repository registration is temporarily closed due to a wave of automated account creation.
+
+<div align="center">
+  <img width="400" alt="image" src="https://github.com/user-attachments/assets/5969ad0a-1a61-4900-bb0f-9f0304327f8b" />
+  
+  <small><sub>I do NOT have a AUR account.</sub></small>
+</div>
+
 ## GitHub
 
 ### Install a copy
